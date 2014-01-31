@@ -1,13 +1,13 @@
 [
   {
     "id":1,"name":"MV Bike Path, Sycamore",
-    "latitude":null,
-    "longitude":null
+    "latitude":37.89692,
+    "longitude":-122.5261000000001
   },
   {
     "id":2,"name":"Golden Gate Bridge, Marin Parking Lot",
-    "latitude":null,
-    "longitude":null
+    "latitude":37.832460000000005,
+    "longitude":-122.48218000000001
   },
   {
     "id":3,"name":"Four Corners",
