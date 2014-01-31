@@ -1,0 +1,57 @@
+[
+  {
+    "id":1,"name":"MV Bike Path, Sycamore",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":2,"name":"Golden Gate Bridge, Marin Parking Lot",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":3,"name":"Four Corners",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":4,"name":"Cascades, Marion",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":5,"name":"Stinson Beach, Panoramic Hwy",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":6,"name":"Panoramic, Pan Toll",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":7,"name":"Rock Springs",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":8,"name":"Mount Tam (East Peak)",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":9,"name":"Ridgecrest, Bolinas-Fairfax Rd",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":10,"name":"Hwy 1, Bolinas-Fairfax Rd",
+    "latitude":null,
+    "longitude":null
+  },
+  {
+    "id":11,"name":"Hwy 1, Muir Woods Rd",
+    "latitude":null,
+    "longitude":null
+  }
+]
