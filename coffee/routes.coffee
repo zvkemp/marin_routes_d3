@@ -206,6 +206,37 @@ class RouteTable extends AbstractRouteTable
 
     { miles: miles.toFixed(1), elevation: elevation }
 
+class ContextMap
+  constructor: (json, dataset_name, options = {}) ->
+    @_json = json
+    @_dataset_name = dataset_name
+    @_options = options
+    @svg = d3.select('#map').append('svg')
+
+  render: ->
+    d3.json(@_json, (error, zips) =>
+      console.log(zips)
+      calizips = topojson.feature(zips, zips.objects[@_dataset_name]).features
+      path = d3.geo.path().projection(@projection())
+
+      map = @svg.append('g').attr('class', 'map')
+      map.selectAll('.zip')
+        .data(calizips)
+        .enter()
+        .append('path')
+        .attr('class', 'zip')
+        .attr('d', path)
+        .style('fill', 'none')
+        .style('stroke', 'black')
+        .style('stroke-width', '0.1pt')
+    )
+
+  projection: (projection) ->
+    if projection
+      @_projection = projection
+      return @
+    @_projection
+
 
 
 
@@ -222,6 +253,18 @@ runTables = ->
       window.rsc = new RouteSegmentCollection(segments)
       rsc.name("Mt Tam from Mill Valley")
       table._route_segments.push(rsc)
+
+      width = 1200
+      height = 800
+
+      cm = new ContextMap('data/bayarea.json', 'ba')
+      cm.projection(d3.geo.albers()
+        .scale(123000)
+        .rotate([122.4350, 0, 0])
+        .center([0, 37.9800])
+        .parallels([35, 36])
+        .translate([width/2, height/2])
+      ).render()
 
 
       table.render()
