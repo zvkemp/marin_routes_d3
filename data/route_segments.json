@@ -116,5 +116,46 @@
     "miles": 6.8,
     "elevation": 279,
     "reverse_elevation": 522
+  },
+  {
+    "id":13,
+    "start_point_id":1,
+    "end_point_id":12,
+    "miles": 8.0,
+    "elevation": 355,
+    "reverse_elevation": 348
+  },
+  {
+    "id":14,
+    "start_point_id":12,
+    "end_point_id":13,
+    "miles": 11.0,
+    "elevation": 754,
+    "reverse_elevation": 435
+  },
+  {
+    "id":15,
+    "start_point_id":13,
+    "end_point_id":1,
+    "miles": 1.8,
+    "elevation": 0,
+    "reverse_elevation": 331
+  },
+  {
+    "id":16,
+    "start_point_id":13,
+    "end_point_id":14,
+    "miles": 6.3,
+    "elevation": 150,
+    "reverse_elevation": 418
+  },
+  {
+    "id":17,
+    "start_point_id":14,
+    "end_point_id":9,
+    "miles": 10.9,
+    "elevation": 1986,
+    "reverse_elevation": 568
   }
+
 ]

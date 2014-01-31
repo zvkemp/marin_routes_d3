@@ -95,12 +95,17 @@ class Routes.RouteTable
     controls = rs.append('td').attr('class', 'controls')
     controls.append('a').attr('href', '#')
       .on('click', (d) =>
-        console.log('adding...', d)
-        @route.push(s) for s in d.components()
-        @render_route_table()
-        @render_segments_table()
+        @add_to_route(d)
       ).text('add')
     rs.exit().remove()
+
+  add_to_route: (d) ->
+    for s in d.components()
+      do (s) =>
+        @route.push(s)
+        @render_path_to_map(s.id)
+    @render_route_table()
+    @render_segments_table()
 
   render_route_table: ->
     route_table = d3.select(@container).select('#route')

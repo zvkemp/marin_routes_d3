@@ -130,17 +130,25 @@
       rs.selectAll('td.controls').remove();
       controls = rs.append('td').attr('class', 'controls');
       controls.append('a').attr('href', '#').on('click', function(d) {
-        var s, _i, _len, _ref;
-        console.log('adding...', d);
-        _ref = d.components();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          s = _ref[_i];
-          _this.route.push(s);
-        }
-        _this.render_route_table();
-        return _this.render_segments_table();
+        return _this.add_to_route(d);
       }).text('add');
       return rs.exit().remove();
+    };
+
+    RouteTable.prototype.add_to_route = function(d) {
+      var s, _fn, _i, _len, _ref,
+        _this = this;
+      _ref = d.components();
+      _fn = function(s) {
+        _this.route.push(s);
+        return _this.render_path_to_map(s.id);
+      };
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        s = _ref[_i];
+        _fn(s);
+      }
+      this.render_route_table();
+      return this.render_segments_table();
     };
 
     RouteTable.prototype.render_route_table = function() {

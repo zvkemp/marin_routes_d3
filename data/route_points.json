@@ -53,5 +53,20 @@
     "id":11,"name":"Hwy 1, Muir Woods Rd",
     "latitude":null,
     "longitude":null
+  },
+  {
+    "id":12,"name":"Tiburon Ferry Landing",
+    "latitude":37.87356,
+    "longitude":-122.45579
+  },
+  {
+    "id":13, "name":"Camino Alto",
+    "latitude": 37.91713,
+    "longitude": -122.52581
+  },
+  {
+    "id": 14, "name":"Fairfax",
+    "latitude": null,
+    "longitude": null
   }
 ]
