@@ -9,7 +9,13 @@
       this.filtered_route_segments = __bind(this.filtered_route_segments, this);
       this.container = container;
       this.route = [];
+      this.initialize_svg();
     }
+
+    RouteTable.prototype.initialize_svg = function() {
+      this.svg = d3.select('body').select('div#map').append('svg').attr('width', 1200).attr('height', 800);
+      return console.log('initialize svg', this.svg);
+    };
 
     RouteTable.prototype.route_points = function(d) {
       if (d) {
@@ -71,20 +77,19 @@
     };
 
     RouteTable.prototype.render = function() {
-      this.render_segments_table();
-      return this.render_points_to_map();
+      return this.render_segments_table();
     };
 
     RouteTable.prototype.render_path_to_map = function(path_id) {
-      var callback, points_array_to_line_string, projection, svg;
+      var callback, group, points_array_to_line_string, projection;
       console.log('render- path to map', path_id);
       projection = this._context_map.projection();
-      svg = this._context_map.svg;
+      group = this._context_map.group;
       points_array_to_line_string = this.points_array_to_line_string;
       callback = function(result) {
         var path, point;
         path = d3.geo.path().projection(projection);
-        return point = svg.append('path').attr('id', "#route_path_" + path_id).datum(result).attr('d', path).style('stroke', 'blue').style('stroke-width', '2pt').style('fill', 'none');
+        return point = group.append('path').attr('id', "#route_path_" + path_id).datum(result).attr('d', path).style('stroke', 'blue').style('stroke-width', '1.5pt').style('fill', 'none');
       };
       return (new Routes.GPXParser).parse_gpx("data/gpx/" + path_id + ".gpx", 'line_string', callback);
     };
@@ -93,26 +98,34 @@
       var path, points;
       path = d3.geo.path().projection(this._context_map.projection()).pointRadius(4);
       console.log(this.points);
-      points = this._context_map.svg.selectAll('.route_point').data(this.points_as_geojson());
+      points = this._context_map.group.selectAll('.route_point').data(this.points_as_geojson());
       return points.enter().append('path').attr('class', 'route_point').attr('d', path).style('fill', 'red');
     };
 
     RouteTable.prototype.filtered_route_segments = function() {
-      var end, last_segment, x, _i, _len, _ref, _results;
+      var end, last_segment, x, _i, _j, _len, _len1, _ref, _ref1, _results, _results1;
       if (this.route.length === 0) {
-        return this.route_segments();
-      } else {
-        last_segment = this.route[this.route.length - 1];
-        end = last_segment.end_point_id();
         _ref = this.route_segments();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           x = _ref[_i];
-          if (x.start_point_id() === end) {
+          if (x.start_point_id() === 2) {
             _results.push(x);
           }
         }
         return _results;
+      } else {
+        last_segment = this.route[this.route.length - 1];
+        end = last_segment.end_point_id();
+        _ref1 = this.route_segments();
+        _results1 = [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          x = _ref1[_j];
+          if (x.start_point_id() === end) {
+            _results1.push(x);
+          }
+        }
+        return _results1;
       }
     };
 
@@ -236,8 +249,7 @@
       if (options == null) {
         options = {};
       }
-      d3.select('#map').selectAll('svg').remove();
-      return this._context_map = new Routes.ContextMap(json, dataset_name, options);
+      return this._context_map = new Routes.ContextMap(this.svg, json, dataset_name, options);
     };
 
     return RouteTable;

@@ -11,7 +11,6 @@
   <script type="text/javascript" src="js/route_segment.js"></script>
   <script type="text/javascript" src="js/route_segment_collection.js"></script>
   <script type="text/javascript" src="js/gpx_parser.js"></script>
-  <script type="text/javascript" src="js/main.js"></script>
   <style type="text/css">
     * {
       font-family: helvetica, arial, sans-serif;
@@ -31,17 +30,24 @@
       font-weight: bold;
     }
 
+    tr.total > td {
+      font-weight: bold;
+    }
+
   </style>
 
 </head>
 <body>
   <div id="container">
     <table id="points"></table>
-    <table id="segments"></table>
     <table id="route"></table>
-
+    Next:
+    <table id="segments"></table>
+    <div id="map"></div>
   </div>  
 
-  <div id="map"></div>
+  
+  <script type="text/javascript" src="js/main.js"></script>
+
 </body>
 </html>

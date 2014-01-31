@@ -3,6 +3,11 @@ class Routes.RouteTable
   constructor: (container) ->
     @container = container
     @route = []
+    @initialize_svg()
+
+  initialize_svg: ->
+    @svg = d3.select('body').select('div#map').append('svg').attr('width', 1200).attr('height', 800)
+    console.log('initialize svg', @svg)
 
   route_points: (d) ->
     if d
@@ -44,20 +49,20 @@ class Routes.RouteTable
 
   render: ->
     @render_segments_table()
-    @render_points_to_map()
+    # @render_points_to_map()
 
   render_path_to_map: (path_id) ->
     console.log('render- path to map', path_id)
     projection = @_context_map.projection()
-    svg = @_context_map.svg
+    group = @_context_map.group
     points_array_to_line_string = @points_array_to_line_string
     callback = (result) ->
 
       path = d3.geo.path().projection(projection)
-      point = svg.append('path').attr('id', "#route_path_#{path_id}").datum(result)
+      point = group.append('path').attr('id', "#route_path_#{path_id}").datum(result)
         .attr('d', path)
         .style('stroke', 'blue')
-        .style('stroke-width', '2pt')
+        .style('stroke-width', '1.5pt')
         .style('fill', 'none')
 
     (new Routes.GPXParser).parse_gpx("data/gpx/#{path_id}.gpx", 'line_string', callback)
@@ -67,7 +72,7 @@ class Routes.RouteTable
     path = d3.geo.path().projection(@_context_map.projection()).pointRadius(4)
     console.log(@points)
 
-    points = @_context_map.svg.selectAll('.route_point').data(@points_as_geojson())
+    points = @_context_map.group.selectAll('.route_point').data(@points_as_geojson())
     points.enter()
       .append('path').attr('class', 'route_point')
       .attr('d', path)
@@ -75,7 +80,7 @@ class Routes.RouteTable
 
   filtered_route_segments: =>
     if @route.length is 0
-      @route_segments()
+      (x for x in @route_segments() when x.start_point_id() is 2) # GGB
     else
       last_segment = @route[@route.length-1]
       end = (last_segment.end_point_id())
@@ -172,8 +177,7 @@ class Routes.RouteTable
     { miles: miles.toFixed(1), elevation: elevation }
 
   context_map: (json, dataset_name, options = {}) ->
-    d3.select('#map').selectAll('svg').remove()
-    @_context_map = new Routes.ContextMap(json, dataset_name, options)
+    @_context_map = new Routes.ContextMap(@svg, json, dataset_name, options)
 
 
 

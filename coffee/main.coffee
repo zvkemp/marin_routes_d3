@@ -15,14 +15,20 @@ runTables = ->
       width = 1200
       height = 800
 
-      cm = table.context_map('data/bayarea.json', 'ba')
-      cm.projection(d3.geo.albers()
+      projection = d3.geo.albers()
         .scale(123000)
         .rotate([122.4350, 0, 0])
         .center([0, 37.9800])
-        .parallels([35, 36])
+        .parallels([35,36])
         .translate([width/2, height/2])
-      ).render()
+
+      table.context_map('data/sf_marin_roads.json', 'marin_roads', { stroke: 'red' })
+        .projection(projection)
+        .render()
+
+
+      cm = table.context_map('data/bayarea.json', 'ba')
+      cm.projection(projection).render()
 
       table.render()
     )
