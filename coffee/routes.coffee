@@ -38,6 +38,45 @@ class RouteSegment
     @_reversed = (not @_reversed)
     @
 
+  components: -> [@]
+
+  name: -> null
+
+class RouteSegmentCollection
+  constructor: (route_segments) ->
+    @_segments = route_segments
+
+  sum: (f) ->
+    s = 0
+    s += (f(x) or 0) for x in @_segments
+    s
+  
+  miles: -> @sum((x) -> x.miles())
+
+  elevation: ->
+    @sum((x) -> x.elevation())
+
+  reverse_elevation: ->
+    @sum((x) -> x.reverse_elevation())
+
+  start_point_id: ->
+    @_segments[0].start_point_id()
+
+  end_point_id: ->
+    @_segments[@_segments.length - 1].end_point_id()
+
+  reverse: ->
+    return @ # do not reverse
+
+  components: -> @_segments
+
+  name: (n) ->
+    if n
+      @_name = n
+      return @
+    "<#{@_name}>" if @_name
+
+
 
 class RouteTable extends AbstractRouteTable
 
@@ -71,7 +110,7 @@ class RouteTable extends AbstractRouteTable
 
 
   render: ->
-    @render_points_table()
+    # @render_points_table()
     @render_segments_table()
 
   filtered_route_segments: =>
@@ -94,16 +133,10 @@ class RouteTable extends AbstractRouteTable
     tds.text((d) -> d)
     rs.selectAll('td.controls').remove()
     controls = rs.append('td').attr('class', 'controls')
-    # controls.append('a').attr('href', '#')
-    # .on('click', (d) =>
-    # console.log('hello', d)
-    # d.reverse()
-    # @render_segments_table()
-    # ).text('reverse')
     controls.append('a').attr('href', '#')
       .on('click', (d) =>
         console.log('adding...', d)
-        @route.push(d)
+        @route.push(s) for s in d.components()
         @render_route_table()
         @render_segments_table()
       ).text('add')
@@ -131,7 +164,10 @@ class RouteTable extends AbstractRouteTable
     rt.exit().remove()
 
   segment_as_array: (segment) =>
-    [segment.id, @segment_name_from_points(segment), @miles(segment), @elevation(segment), @reverse_elevation(segment)]
+    [segment.id, @segment_name(segment), @miles(segment), @elevation(segment), @reverse_elevation(segment)]
+
+  segment_name: (segment) ->
+    segment.name() or @segment_name_from_points(segment)
 
   render_points_table: ->
     points_table = d3.select(@container).select('#points')
@@ -180,6 +216,13 @@ runTables = ->
     d3.json("../data/route_segments.json", (error, route_segments) ->
       table.route_points(route_points)
         .route_segments(route_segments)
+
+      sycamore_to_east_peak_segment_ids = [1, 2, 4, 5, 6]
+      segments = ((new RouteSegment(route_segments[id - 1])) for id in sycamore_to_east_peak_segment_ids)
+      window.rsc = new RouteSegmentCollection(segments)
+      rsc.name("Mt Tam from Mill Valley")
+      table._route_segments.push(rsc)
+
 
       table.render()
     )
