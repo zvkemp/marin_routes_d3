@@ -29,3 +29,5 @@ class Routes.RouteSegment
   components: -> [@]
 
   name: -> null
+
+  mappable: -> true # for potential route segments

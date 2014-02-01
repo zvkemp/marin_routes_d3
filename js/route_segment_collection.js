@@ -60,6 +60,10 @@
       }
     };
 
+    RouteSegmentCollection.prototype.mappable = function() {
+      return false;
+    };
+
     return RouteSegmentCollection;
 
   })();

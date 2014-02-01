@@ -31,3 +31,5 @@ class Routes.RouteSegmentCollection
       @_name = n
       return @
     "<#{@_name}>" if @_name
+
+  mappable: -> false

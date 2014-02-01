@@ -60,6 +60,10 @@
       return null;
     };
 
+    RouteSegment.prototype.mappable = function() {
+      return true;
+    };
+
     return RouteSegment;
 
   })();

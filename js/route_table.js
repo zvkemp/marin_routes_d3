@@ -9,11 +9,14 @@
       this.filtered_route_segments = __bind(this.filtered_route_segments, this);
       this.container = container;
       this.route = [];
+      this._route_segment_line_string_cache = {};
       this.initialize_svg();
     }
 
     RouteTable.prototype.initialize_svg = function() {
       this.svg = d3.select('body').select('div#map').append('svg').attr('width', 1200).attr('height', 800);
+      this.current_route_group = this.svg.append('g');
+      this.potential_route_group = this.svg.append('g');
       return console.log('initialize svg', this.svg);
     };
 
@@ -77,21 +80,72 @@
     };
 
     RouteTable.prototype.render = function() {
-      return this.render_segments_table();
+      this.render_segments_table();
+      return this.render_next_segments_to_map();
     };
 
-    RouteTable.prototype.render_path_to_map = function(path_id) {
-      var callback, group, points_array_to_line_string, projection;
-      console.log('render- path to map', path_id);
-      projection = this._context_map.projection();
-      group = this._context_map.group;
-      points_array_to_line_string = this.points_array_to_line_string;
-      callback = function(result) {
+    RouteTable.prototype.route_segment_line_string_cache = function(id, callback) {
+      var a, rslsc, store_and_execute_callback;
+      if (callback == null) {
+        callback = (function() {
+          return null;
+        });
+      }
+      if (a = this._route_segment_line_string_cache[id]) {
+        return callback(a);
+      } else {
+        rslsc = this._route_segment_line_string_cache;
+        store_and_execute_callback = function(result) {
+          rslsc[id] = result;
+          return callback(result);
+        };
+        return (new Routes.GPXParser).parse_gpx("data/gpx/" + id + ".gpx", 'line_string', store_and_execute_callback);
+      }
+    };
+
+    RouteTable.prototype.projection = function(proj) {
+      if (proj) {
+        this._projection = proj;
+        return this;
+      }
+      return this._projection;
+    };
+
+    RouteTable.prototype.render_path_to_map = function(path_id, options) {
+      var cache, group, projection, render_callback;
+      if (options == null) {
+        options = {};
+      }
+      projection = this.projection();
+      group = options.group || this.current_route_group;
+      cache = this._route_segment_line_string_cache;
+      render_callback = function(result) {
         var path, point;
         path = d3.geo.path().projection(projection);
-        return point = group.append('path').attr('id', "#route_path_" + path_id).datum(result).attr('d', path).style('stroke', 'blue').style('stroke-width', '1.5pt').style('fill', 'none');
+        return point = group.append('path').attr('id', "#route_path_" + path_id).datum(result).attr('d', path).style('stroke', options.color || 'blue').style('stroke-width', '1.5pt').style('stroke-dasharray', options.stroke_dasharray || 'none').style('fill', 'none');
       };
-      return (new Routes.GPXParser).parse_gpx("data/gpx/" + path_id + ".gpx", 'line_string', callback);
+      return this.route_segment_line_string_cache(path_id, render_callback);
+    };
+
+    RouteTable.prototype.render_next_segments_to_map = function() {
+      var potential_route, _i, _len, _ref, _results,
+        _this = this;
+      this.potential_route_group.selectAll('path').remove();
+      _ref = this.filtered_route_segments();
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        potential_route = _ref[_i];
+        _results.push((function(potential_route) {
+          if (potential_route.mappable()) {
+            return _this.render_path_to_map(potential_route.id, {
+              color: 'red',
+              group: _this.potential_route_group,
+              stroke_dasharray: '3,3'
+            });
+          }
+        })(potential_route));
+      }
+      return _results;
     };
 
     RouteTable.prototype.render_points_to_map = function() {
@@ -161,7 +215,8 @@
         _fn(s);
       }
       this.render_route_table();
-      return this.render_segments_table();
+      this.render_segments_table();
+      return this.render_next_segments_to_map();
     };
 
     RouteTable.prototype.render_route_table = function() {

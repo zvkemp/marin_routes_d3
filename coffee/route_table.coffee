@@ -3,10 +3,13 @@ class Routes.RouteTable
   constructor: (container) ->
     @container = container
     @route = []
+    @_route_segment_line_string_cache = {}
     @initialize_svg()
 
   initialize_svg: ->
     @svg = d3.select('body').select('div#map').append('svg').attr('width', 1200).attr('height', 800)
+    @current_route_group = @svg.append('g')
+    @potential_route_group = @svg.append('g')
     console.log('initialize svg', @svg)
 
   route_points: (d) ->
@@ -49,23 +52,55 @@ class Routes.RouteTable
 
   render: ->
     @render_segments_table()
+    @render_next_segments_to_map()
     # @render_points_to_map()
+    #
 
-  render_path_to_map: (path_id) ->
-    console.log('render- path to map', path_id)
-    projection = @_context_map.projection()
-    group = @_context_map.group
-    points_array_to_line_string = @points_array_to_line_string
-    callback = (result) ->
+  route_segment_line_string_cache: (id, callback = (-> null)) ->
+    if a = @_route_segment_line_string_cache[id]
+      callback(a)
+    else
+      rslsc = @_route_segment_line_string_cache
+      store_and_execute_callback = (result) ->
+        rslsc[id] = result
+        callback(result)
+      (new Routes.GPXParser).parse_gpx("data/gpx/#{id}.gpx", 'line_string', store_and_execute_callback)
+    
 
+
+  projection: (proj) ->
+    if proj
+      @_projection = proj
+      return @
+    @_projection
+
+
+  render_path_to_map: (path_id, options = {}) ->
+    projection = @projection()
+    group = options.group or @current_route_group
+    cache = @_route_segment_line_string_cache
+
+    render_callback = (result) ->
       path = d3.geo.path().projection(projection)
       point = group.append('path').attr('id', "#route_path_#{path_id}").datum(result)
         .attr('d', path)
-        .style('stroke', 'blue')
+        .style('stroke', options.color or 'blue')
         .style('stroke-width', '1.5pt')
+        .style('stroke-dasharray', options.stroke_dasharray or 'none')
         .style('fill', 'none')
 
-    (new Routes.GPXParser).parse_gpx("data/gpx/#{path_id}.gpx", 'line_string', callback)
+    @route_segment_line_string_cache(path_id, render_callback)
+
+
+  render_next_segments_to_map: ->
+    @potential_route_group.selectAll('path').remove()
+    for potential_route in @filtered_route_segments()
+      do (potential_route) =>
+        if potential_route.mappable()
+          @render_path_to_map(potential_route.id, { color: 'red', group: @potential_route_group, stroke_dasharray: '3,3' })
+
+
+
 
   
   render_points_to_map: ->
@@ -111,6 +146,7 @@ class Routes.RouteTable
         @render_path_to_map(s.id)
     @render_route_table()
     @render_segments_table()
+    @render_next_segments_to_map()
 
   render_route_table: ->
     route_table = d3.select(@container).select('#route')

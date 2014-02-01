@@ -2,6 +2,7 @@ class Routes.GPXParser
   no_op: -> null
 
   parse_gpx: (datafile, feature_function, callback = @no_op) ->
+    console.log 'parsing new gpx file'
     d3.xml datafile, 'application/xml', (gpx) =>
       result = @[feature_function](gpx)
       console.log(result)

@@ -22,9 +22,11 @@ runTables = ->
         .parallels([35,36])
         .translate([width/2, height/2])
 
-      table.context_map('data/sf_marin_roads.json', 'marin_roads', { stroke: 'red' })
-        .projection(projection)
-        .render()
+      table.projection(projection)
+
+      # table.context_map('data/sf_marin_roads.json', 'marin_roads', { stroke: 'red' })
+      #   .projection(projection)
+      #   .render()
 
 
       cm = table.context_map('data/bayarea.json', 'ba')

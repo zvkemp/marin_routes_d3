@@ -12,6 +12,7 @@
       if (callback == null) {
         callback = this.no_op;
       }
+      console.log('parsing new gpx file');
       return d3.xml(datafile, 'application/xml', function(gpx) {
         var result;
         result = _this[feature_function](gpx);
